@@ -173,7 +173,7 @@ When viewing a search result block, the UI card structures data into distinct co
 | UI Section | What It Is Semantically | Role in RAG & Search |
 | :--- | :--- | :--- |
 | **`from: [Filename]`** | **Document Provenance**<br>The clean filename identifying which specific PDF document contains the matching information. | Ensures traceability by pointing users directly to the original file source. |
-| **`References`** | **Grounded Evidence**<br>The specific context blocks and page numbers that the generator LLM (Gemini) cited when writing the summary answer. | Establishes factual anchoring. These are the direct sources of truth that validate the generated summary text and prevent hallucinations. |
+| **`References`** | **Grounded Evidence**<br>The specific context blocks and page numbers that the generator LLM (Gemini) cited when writing the summary answer. | Establishes factual anchoring. **Note:** Only appears on document cards that the LLM explicitly cited to construct the summary answer; uncited search results will omit this section. |
 | **`Snippets`** | **Lexical Highlights (BM25)**<br>Keyword-focused text snippets showing exact query occurrences highlighted in bold. | Provides instant visual feedback showing where exact string matching (traditional keyword search) succeeded. |
 | **`Extractive Segments`** | **Semantic Retrieval Chunks**<br>Contiguous text blocks retrieved based on vector space similarity. | Shows the raw, highest-ranking semantic passages (paragraphs) retrieved by the vector database matching the user's intent. |
 
@@ -181,8 +181,10 @@ When viewing a search result block, the UI card structures data into distinct co
 To clarify the specific rendering and formatting behaviors in the search results:
 
 * **References vs. Extractive Segments**: `References` lists all pages/chunks the generator model (Gemini) cited for the query summary—regardless of search result limits. `Extractive Segments` displays raw semantic search matches and is strictly capped by the `Max Extractive Segment Count` parameter.
+* **Why Some Cards Omit References**: While semantic search retrieves multiple relevant documents (rendering **Snippets** and **Extractive Segments** on all cards), only the subset of documents actually referenced by the LLM to construct its summary answer will feature a **References** section. This is correct behavior indicating which sources grounded the AI's generated response.
 * **Markdown Asterisks**: Vertex AI's PDF parser ingests text formatting as Markdown (e.g., `**Bold Labels**` and `* Bullet Lists`). Because the frontend renders strings as plain text instead of parsing Markdown, the asterisks appear literally in the UI.
 * **Global Reference Duplication (Resolved)**: The global references array (`response.summary.summaryWithMetadata.references`) was previously duplicated under every document. This has been resolved by dynamically scanning and filtering references to match their specific parent document (see [edward_BUGS_FOUND.md](file:///Users/ctwins/Documents/code/study/vertex-ai-search-agent-builder-demo/edward_BUGS_FOUND.md)).
+
 
 ---
 
