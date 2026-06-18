@@ -17,10 +17,17 @@ async function search(payload) {
       max_snippet_count: payload.max_snippet_count,
       max_extractive_segment_count: payload.max_extractive_segment_count,
       max_extractive_answer_count: payload.max_extractive_answer_count,
+    }, {
+      headers: {
+        "X-API-Key": localStorage.getItem("search_password") || "",
+      }
     });
     return response.data;
   } catch (error) {
     console.error("Error fetching search results:", error);
+    if (error.response?.status === 401) {
+      return { error: "unauthorized" };
+    }
     return null;
   }
 }

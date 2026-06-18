@@ -1,4 +1,5 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Security, Depends
+from fastapi.security import APIKeyHeader
 import os
 from env import load_dotenv
 import json
@@ -11,6 +12,16 @@ import uuid
 from fastapi.staticfiles import StaticFiles
 
 load_dotenv('.env')
+
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+
+def verify_api_key(api_key: str = Security(api_key_header)):
+    expected = os.getenv("SEARCH_PASSWORD")
+    if not expected:
+        return
+    if api_key != expected:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
 
 LOCATION = os.getenv("LOCATION")
 
@@ -65,7 +76,7 @@ async def ping():
     return {"status": "pong"}
 
 
-@app.post("/search")
+@app.post("/search", dependencies=[Depends(verify_api_key)])
 async def search(query_model: QueryModel):
     """
     Searches the Discovery Engine for documents matching the provided query.
@@ -85,7 +96,7 @@ async def search(query_model: QueryModel):
     return results
 
 
-@app.post("/upload")
+@app.post("/upload", dependencies=[Depends(verify_api_key)])
 async def upload_file(file: UploadFile = File(...)):
     """
     Uploads a PDF file to Google Cloud Storage.
@@ -117,7 +128,7 @@ async def upload_file(file: UploadFile = File(...)):
             status_code=500, detail=f"File upload failed: {str(e)}")
 
 
-@app.post("/datastore/import")
+@app.post("/datastore/import", dependencies=[Depends(verify_api_key)])
 async def import_data(data: DatastoreImportModel):
     """
     Imports a PDF document into Cloud Datastore.

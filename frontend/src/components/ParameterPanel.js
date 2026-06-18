@@ -34,6 +34,12 @@ const ParameterPanel = () => {
     console.log("Search Params: ", searchParams); // Log the search parameters
 
     const results = await search(searchParams); // Call the search function with the payload
+    if (results && results.error === "unauthorized") {
+      localStorage.removeItem("search_password");
+      alert("Incorrect password or session expired. Redirecting to login.");
+      window.location.reload();
+      return;
+    }
     setSearchResults(results);
     setIsLoading(false);
   };
