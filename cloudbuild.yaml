@@ -20,7 +20,7 @@ steps:
         "--platform",
         "managed",
         "--region",
-        "asia-southeast1", # Replace with your desired region
+        "us-central1", # Replace with your desired region
         "--allow-unauthenticated",
       ]
 
