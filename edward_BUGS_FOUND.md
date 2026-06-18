@@ -16,4 +16,6 @@ A simple authentication layer is implemented to protect access to the search por
   ```
   It then rendered this global reference list inside the `getItem` loop for *each* matched document. This caused the exact same global references list (regardless of which file the cited text actually belongs to) to be duplicated and rendered under every file supersection card.
 * **Fix**: Refactored [SearchResponseList.js](file:///Users/ctwins/Documents/code/study/vertex-ai-search-agent-builder-demo/frontend/src/components/SearchResponseList.js) to dynamically scan the global `references` array and filter citations specific to each document. It matches by either `ref.document === item.document.name`, matching `ref.title === docTitle`, or matching the GCP resource document ID suffix. Now, each document card only displays references that are actually derived from that file, and uncited documents display no references block.
+* **Testing**: Implemented a unit test suite in [SearchResponseList.test.js](file:///Users/ctwins/Documents/code/study/vertex-ai-search-agent-builder-demo/frontend/src/components/SearchResponseList.test.js). The test mocks API data with multi-document results and asserts that each card renders only its specific references (and hides unrelated references), verifying the correction and preventing regressions.
+
 
