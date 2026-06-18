@@ -22,6 +22,8 @@ steps:
         "--region",
         "us-central1", # Replace with your desired region
         "--allow-unauthenticated",
+        "--set-env-vars",
+        "PROJECT_ID=agents-499722,LOCATION=global,DATASTORE_ID=edwardchee-agents-research-medical_1781743158807,AGENT_APPLICATION_ID=edwardchee-agents-research_1781743663240,BUCKET_NAME=edwardchee-agents",
       ]
 
 images:
