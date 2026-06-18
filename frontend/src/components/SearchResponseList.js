@@ -13,8 +13,8 @@ const ResponseItem = (props) => {
     <div className="bg-gray rounded-md p-4 w-full mb-8">
       <div className="flex-col overflow-y-auto items-center justify-center">
         {props.response.results &&
-          props.response.results.map((item) => {
-            return getItem(item, props.response);
+          props.response.results.map((item, index) => {
+            return getItem(item, props.response, index);
           })}
       </div>
     </div>
@@ -28,7 +28,7 @@ const ResponseItem = (props) => {
  * @param {object} response The search response object.
  * @returns {JSX.Element} The JSX element representing the item.
  */
-function getItem(item, response) {
+function getItem(item, response, index) {
   const title = item.document?.derivedStructData?.title || item.document?.structData?.title || item.document?.id || "Untitled Document";
   
   // Find the reference specific to this document instead of duplicating the global list [0]
@@ -45,7 +45,7 @@ function getItem(item, response) {
   const extractiveSegments = item.document?.derivedStructData?.extractive_segments;
 
   return (
-    <div className="block bg-white rounded-md p-4 w-full mb-8">
+    <div className="block bg-white rounded-md p-4 w-full mb-8" key={item.document?.id || index}>
       {getFileName(title)}
       {references && getReferences(references)}
       {snippets && getSnippets(snippets)}
@@ -85,9 +85,9 @@ function getReferences(referenceItems) {
       <h1 className="text-md font-bold">References</h1>
       <div className="block ">
         {referenceItems &&
-          referenceItems.map((item) => {
+          referenceItems.map((item, index) => {
             return (
-              <div className="block mb-2">
+              <div className="block mb-2" key={index}>
                 <h1 className="text-xs font-medium text-violet-900">
                   page {item.pageIdentifier}
                 </h1>
@@ -111,9 +111,9 @@ function getSnippets(snippetItems) {
     <div className="block mt-2 mb-2">
       <h1 className="text-md font-bold">Snippets</h1>
       {snippetItems &&
-        snippetItems.map((item) => {
+        snippetItems.map((item, index) => {
           return (
-            <div className="block mb-2">
+            <div className="block mb-2" key={index}>
               <h1 className="text-sm prose">{parse(item.snippet)}</h1>
             </div>
           );
@@ -134,9 +134,9 @@ function getExtractiveAnswer(extractiveAnswerItems) {
       <h1 className="text-md font-bold">Extractive Answers</h1>
       <div className="block mb-2">
         {extractiveAnswerItems &&
-          extractiveAnswerItems.map((item) => {
+          extractiveAnswerItems.map((item, index) => {
             return (
-              <div className="block">
+              <div className="block" key={index}>
                 <h1 className="text-xs font-medium text-orange-700">
                   page {item.pageNumber}
                 </h1>
@@ -161,9 +161,9 @@ function getExtractiveSegments(extractiveSegmentItems) {
       <h1 className="text-md font-bold">Extractive Segments</h1>
       <div className="block mb-2">
         {extractiveSegmentItems &&
-          extractiveSegmentItems.map((item) => {
+          extractiveSegmentItems.map((item, index) => {
             return (
-              <div className="block mb-2">
+              <div className="block mb-2" key={index}>
                 <div className="flex justify-between">
                   <h1 className="text-xs font-medium text-orange-700">
                     page {item.pageNumber}
