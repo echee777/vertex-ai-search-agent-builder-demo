@@ -29,17 +29,19 @@ const ResponseItem = (props) => {
  * @returns {JSX.Element} The JSX element representing the item.
  */
 function getItem(item, response) {
+  const title = item.document?.derivedStructData?.title || item.document?.structData?.title || item.document?.id || "Untitled Document";
+  const references = response?.summary?.summaryWithMetadata?.references?.[0]?.chunkContents;
+  const snippets = item.document?.derivedStructData?.snippets;
+  const extractiveAnswers = item.document?.derivedStructData?.extractive_answers;
+  const extractiveSegments = item.document?.derivedStructData?.extractive_segments;
+
   return (
     <div className="block bg-white rounded-md p-4 w-full mb-8">
-      {getFileName(item.document.structData.title)}
-      {getReferences(
-        response.summary.summaryWithMetadata.references[0].chunkContents
-      )}
-      {getSnippets(item.document.derivedStructData.snippets)}
-      {getExtractiveAnswer(item.document.derivedStructData.extractive_answers)}
-      {getExtractiveSegments(
-        item.document.derivedStructData.extractive_segments
-      )}
+      {getFileName(title)}
+      {references && getReferences(references)}
+      {snippets && getSnippets(snippets)}
+      {extractiveAnswers && getExtractiveAnswer(extractiveAnswers)}
+      {extractiveSegments && getExtractiveSegments(extractiveSegments)}
     </div>
   );
 }
@@ -51,12 +53,13 @@ function getItem(item, response) {
  * @returns {JSX.Element} The JSX element representing the file name.
  */
 function getFileName(docTitle) {
+  const titleStr = docTitle ? docTitle.toString() : "";
   return (
     <h3 className="text-md font-medium mb-2 text-sky-900">
       from:{" "}
-      {docTitle.toString().includes("docs/")
-        ? docTitle.toString().split("/")[1]
-        : docTitle.toString()}
+      {titleStr.includes("docs/")
+        ? titleStr.split("/")[1]
+        : titleStr}
     </h3>
   );
 }
@@ -157,7 +160,7 @@ function getExtractiveSegments(extractiveSegmentItems) {
                     page {item.pageNumber}
                   </h1>
                   <h1 className="text-xs font-medium text-green-800">
-                    relevance score: {item.relevanceScore.toFixed(2)}
+                    relevance score: {item.relevanceScore != null ? Number(item.relevanceScore).toFixed(2) : "N/A"}
                   </h1>
                 </div>
                 <h1 className="text-sm">{item.content}</h1>
