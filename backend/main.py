@@ -178,4 +178,5 @@ async def import_data(data: DatastoreImportModel):
             status_code=500, detail=f"Datastore import failed: {str(e)}")
 
 # Serve the static files (uncomment only if running locally)
-app.mount("/", StaticFiles(directory="app/static", html=True), name="static")
+if os.path.exists("app/static"):
+    app.mount("/", StaticFiles(directory="app/static", html=True), name="static")

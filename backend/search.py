@@ -53,9 +53,20 @@ def search_discovery_engine(
     # The full resource name of the search app serving config
     serving_config = f"projects/{PROJECT_ID}/locations/{LOCATION}/collections/default_collection/engines/{AGENT_APPLICATION_ID}/servingConfigs/default_config"
 
-    # Optional: Configuration options for search
-    # Refer to the `ContentSearchSpec` reference for all supported fields:
-    # https://cloud.google.com/python/docs/reference/discoveryengine/latest/google.cloud.discoveryengine_v1.types.SearchRequest.ContentSearchSpec
+    datastore_has_chunking = os.getenv("DATASTORE_HAS_CHUNKING", "false").lower() == "true"
+
+    if datastore_has_chunking:
+        extractive_spec = discoveryengine.SearchRequest.ContentSearchSpec.ExtractiveContentSpec(
+            max_extractive_segment_count=max_extractive_segment_count,
+            return_extractive_segment_score=True,
+        )
+    else:
+        extractive_spec = discoveryengine.SearchRequest.ContentSearchSpec.ExtractiveContentSpec(
+            max_extractive_answer_count=max_extractive_answer_count,
+            max_extractive_segment_count=max_extractive_segment_count,
+            return_extractive_segment_score=True,
+        )
+
     content_search_spec = discoveryengine.SearchRequest.ContentSearchSpec(
         # For information about snippets, refer to:
         # https://cloud.google.com/generative-ai-app-builder/docs/snippets
@@ -63,12 +74,7 @@ def search_discovery_engine(
             return_snippet=True,
             max_snippet_count=max_snippet_count
         ),
-        extractive_content_spec=discoveryengine.SearchRequest.ContentSearchSpec.ExtractiveContentSpec
-        (
-            max_extractive_answer_count=max_extractive_answer_count,
-            max_extractive_segment_count=max_extractive_segment_count,
-            return_extractive_segment_score=True,
-        ),
+        extractive_content_spec=extractive_spec,
         # For information about search summaries, refer to:
         # https://cloud.google.com/generative-ai-app-builder/docs/get-search-summaries
         summary_spec=discoveryengine.SearchRequest.ContentSearchSpec.SummarySpec(
