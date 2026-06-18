@@ -30,7 +30,16 @@ const ResponseItem = (props) => {
  */
 function getItem(item, response) {
   const title = item.document?.derivedStructData?.title || item.document?.structData?.title || item.document?.id || "Untitled Document";
-  const references = response?.summary?.summaryWithMetadata?.references?.[0]?.chunkContents;
+  
+  // Find the reference specific to this document instead of duplicating the global list [0]
+  const docReference = response?.summary?.summaryWithMetadata?.references?.find(
+    (ref) =>
+      (item.document?.name && ref.document === item.document.name) ||
+      (ref.title === title) ||
+      (item.document?.id && ref.document?.endsWith(`/documents/${item.document.id}`))
+  );
+  const references = docReference?.chunkContents;
+  
   const snippets = item.document?.derivedStructData?.snippets;
   const extractiveAnswers = item.document?.derivedStructData?.extractive_answers;
   const extractiveSegments = item.document?.derivedStructData?.extractive_segments;
